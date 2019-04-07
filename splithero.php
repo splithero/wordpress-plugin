@@ -4,10 +4,10 @@
  * Plugin Name: SplitHero
  * Author: SplitHero
  * Description: Split Testing for WordPress. Stop guessing and start testing.
- * Version: 1.2.0
+ * Version: 1.2.1
  */
 
-define('SPLITHERO_VERSION', '1.2.0');
+define('SPLITHERO_VERSION', '1.2.1');
 define('SPLITHERO_ENDPOINT', 'https://app.splithero.com/api/');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
 define('SPLITHERO_GITHUB_TOKEN', '8aef10c5b50f378c058f183f404fa1313fd16478');

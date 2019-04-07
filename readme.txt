@@ -7,6 +7,9 @@ Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog ==
 
+= 1.2.1 =
+* Include vendor folders (excluded by gitignore)
+
 = 1.2 =
 * Included WP JSON REST API endpoint
 * Included redirects function, checking for campaign URL requests 
