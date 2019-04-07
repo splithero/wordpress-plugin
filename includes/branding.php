@@ -1,0 +1,1 @@
+<img src="https://app.splithero.com/images/logo.svg" height="140" style="margin: 20px 0;" />
