@@ -4,10 +4,10 @@
  * Plugin Name: SplitHero
  * Author: SplitHero
  * Description: Split Testing for WordPress. Stop guessing and start testing.
- * Version: 1.1.0
+ * Version: 1.2.0
  */
 
-define('SPLITHERO_VERSION', '1.1.0');
+define('SPLITHERO_VERSION', '1.2.0');
 define('SPLITHERO_ENDPOINT', 'https://app.splithero.com/api/');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
 define('SPLITHERO_GITHUB_TOKEN', '8aef10c5b50f378c058f183f404fa1313fd16478');
@@ -16,9 +16,18 @@ require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/includes/puc/plugin-update-checker.php';
 require __DIR__ . '/includes/tables.php';
 
+/*
+ * Activation and deactivation hooks
+ * Create campaign tables on activate
+ * Drop campaign tables on deactivate
+ */
 register_activation_hook(__FILE__, 'splitHeroCreateTables');
 register_deactivation_hook(__FILE__, 'splitHeroDropTables');
 
+/*
+ * Plugin update checker
+ * Via GitHub repo
+ */
 $updateChecker = Puc_v4_Factory::buildUpdateChecker(
 	'https://github.com/' . SPLITHERO_GITHUB_ENDPOINT,
 	__FILE__,
@@ -28,14 +37,18 @@ $updateChecker = Puc_v4_Factory::buildUpdateChecker(
 $updateChecker->setAuthentication(SPLITHERO_GITHUB_TOKEN);
 $updateChecker->setBranch('master');
 
-add_action('admin_menu', 'splithero_menu');
+/*
+ * Menu options added
+ * Under Settings
+ */
+add_action('admin_menu', 'splitheroMenu');
 
-function splithero_menu()
+function splitheroMenu()
 {
-	add_options_page('SplitHero', 'SplitHero', 'manage_options', 'splithero', 'showSettings');
+	add_options_page('SplitHero', 'SplitHero', 'manage_options', 'splithero', 'splitheroShowSettings');
 }
 
-function showSettings()
+function splitheroShowSettings()
 {
 	include 'includes/branding.php';
 	
@@ -126,4 +139,76 @@ function showSettings()
 			}
 		}
 	}
+}
+
+/*
+ * API endpoint created
+ * Under WP REST API for injection of the campaign details
+ */
+add_action('rest_api_init', 'splitheroApiRoutes');
+
+function splitheroApiRoutes()
+{
+	register_rest_route('splithero', 'campaigns', [
+			'methods' => 'POST',
+			'callback' => 'splitheroInsertUpdateCampaign'
+		]
+	);
+}
+
+function splitheroInsertUpdateCampaign(WP_REST_Request $request)
+{
+	if (get_option('splithero_token') !== $request->get_header('token')) {
+		return rest_ensure_response('API token failure.');
+	}
+	
+	// Loop through request body
+	// Insert or update existing campaign data
+	
+	return rest_ensure_response('Campaigns added or updated successfully.');
+}
+
+/*
+ * 302 redirects based on Campaign details
+ */
+add_action('init', 'splitHeroRedirects', 1);
+
+function splitHeroRedirects()
+{
+	// What was requested (strip out home portion, case insensitive)
+	$request = str_ireplace(get_option('home'), '', splitHeroUtilityGetAddress());
+	$request = rtrim($request, '/');
+	
+	// Don't allow people to accidentally lock themselves out of admin
+	if (strpos($request, '/wp-login') !== 0 && strpos($request, '/wp-admin') !== 0) {
+		// Check pushed campaigns for matching request
+		// If match, post to SplitHero API
+		// Redirect to response
+	}
+}
+
+/**
+ * Utility function to get the full address of the current request
+ *
+ * @return string
+ */
+function splitHeroUtilityGetAddress()
+{
+	return splitHeroUtilityGetProtocol() . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+}
+
+/**
+ * Utility function to get the request protocol
+ *
+ * @return string
+ */
+function splitHeroUtilityGetProtocol()
+{
+	$protocol = 'http';
+	
+	if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') {
+		$protocol .= "s";
+	}
+	
+	return $protocol;
 }
