@@ -4,17 +4,29 @@
  * Plugin Name: SplitHero
  * Author: SplitHero
  * Description: Split Testing for WordPress. Stop guessing and start testing.
- * Version: 1.0.0
+ * Version: 1.1.0
  */
 
-define('SPLITHERO_VERSION', '1.0.0');
+define('SPLITHERO_VERSION', '1.1.0');
 define('SPLITHERO_ENDPOINT', 'https://app.splithero.com/api/');
+define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
+define('SPLITHERO_GITHUB_TOKEN', '8aef10c5b50f378c058f183f404fa1313fd16478');
 
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/includes/puc/plugin-update-checker.php';
 require __DIR__ . '/includes/tables.php';
 
 register_activation_hook(__FILE__, 'splitHeroCreateTables');
 register_deactivation_hook(__FILE__, 'splitHeroDropTables');
+
+$updateChecker = Puc_v4_Factory::buildUpdateChecker(
+	'https://github.com/' . SPLITHERO_GITHUB_ENDPOINT,
+	__FILE__,
+	'splithero'
+);
+
+$updateChecker->setAuthentication(SPLITHERO_GITHUB_TOKEN);
+$updateChecker->setBranch('master');
 
 add_action('admin_menu', 'splithero_menu');
 
