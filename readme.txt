@@ -7,6 +7,12 @@ Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog ==
 
+= 1.4 =
+* Unique identifier, campaigns remote push, request remote logging and redirection
+
+= 1.3 =
+* Updated activation/deactivation tables
+
 = 1.2.1 =
 * Include vendor folders (excluded by gitignore)
 
