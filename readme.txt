@@ -1,11 +1,14 @@
 === SplitHero ===
 Requires at least: 4.9
-Tested up to: 5.2.1
+Tested up to: 5.2.2
 Requires PHP: 7.0
 
 Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog ==
+
+= 1.6 =
+* Improved instructions for use and auto-cache flushing
 
 = 1.5 =
 * No longer using PHP for redirections, replace with remote JS controls

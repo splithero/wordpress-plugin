@@ -9,7 +9,7 @@
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '1.5');
+define('SPLITHERO_VERSION', '1.6');
 define('SPLITHERO_ENDPOINT', 'https://app.splithero.com/api/');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
 define('SPLITHERO_GITHUB_TOKEN', '8aef10c5b50f378c058f183f404fa1313fd16478');
@@ -75,13 +75,45 @@ function splitheroShowSettings()
 		}
 	}
 	
-	$splitHeroToken = get_option('splithero_token');
-	
-	include 'includes/settings.php';
-	
-	if ($splitHeroToken) {
-		include 'includes/sync.php';
-	}
+	$splitHeroToken = get_option('splithero_token'); ?>
+
+    <table class="widefat striped" style="width: 98%;">
+        <tbody>
+            <tr>
+                <td class="desc">
+                    <h3>Step 1</h3>
+                    <p>Enter your API key below and press Save.</p>
+
+                    <form method="post">
+                        <label for="API Token">Your API token</label>
+                        <br />
+                        <input type="text" name="splithero_token" id="splithero_token" value="<?php echo $splitHeroToken; ?>" size="40">
+                        <br /><br />
+                        <input type="submit" value="Save" class="button button-primary">
+                        <br /><br />
+                        <p>You can find your API token via <a href="https://app.splithero.com/domains" target="_blank">Split Hero > Domains</a>.</p>
+                    </form>
+                </td>
+
+	            <?php if ($splitHeroToken) { ?>
+                    <td class="desc">
+                        <h3>Step 2</h3>
+                        <p>Click the button below to sync your posts & pages to Split Hero.</p>
+
+                        <form method="post">
+                            <input type="hidden" name="splithero_sync" value="true" />
+                            <input type="submit" value="Sync" class="button button-primary">
+                        </form>
+                    </td>
+                    <td class="desc">
+		                <h3>Step 3</h3>
+                        <p>Return to the Split Hero dashboard and proceed to create a campaign.</p>
+                        <a href="https://app.splithero.com/campaigns" class="button button-primary" target="_blank">Create a campaign</a>
+                    </td><?php
+	            } ?>
+            </tr>
+        </tbody>
+    </table><?php
 	
 	if (!empty($_POST['splithero_sync'])) {
 		$sync['config'] = [
