@@ -79,43 +79,44 @@ function splitheroShowSettings()
 	$splitHeroToken = get_option('splithero_token'); ?>
 
     <table class="widefat striped" style="width: 98%;">
-        <tbody>
-            <tr>
-                <td class="desc">
-                    <h3>Step 1</h3>
-                    <p>Enter your API key below and press Save.</p>
+    <tbody>
+    <tr>
+        <td class="desc">
+            <h3>Step 1</h3>
+            <p>Enter your API key below and press Save.</p>
 
-                    <form method="post">
-                        <label for="API Token">Your API token</label>
-                        <br/>
-                        <input type="text" name="splithero_token" id="splithero_token" value="<?php echo $splitHeroToken; ?>"
-                               size="40">
-                        <br/><br/>
-                        <input type="submit" value="Save" class="button button-primary">
-                        <br/><br/>
-                        <p>You can find your API token via <a href="https://app.splithero.com/domains" target="_blank">Split Hero > Domains</a>.</p>
-                    </form>
-                </td>
+            <form method="post">
+                <label for="API Token">Your API token</label>
+                <br/>
+                <input type="text" name="splithero_token" id="splithero_token" value="<?php echo $splitHeroToken; ?>"
+                       size="40">
+                <br/><br/>
+                <input type="submit" value="Save" class="button button-primary">
+                <br/><br/>
+                <p>You can find your API token via <a href="https://app.splithero.com/domains" target="_blank">Split
+                        Hero > Domains</a>.</p>
+            </form>
+        </td>
 
-                <?php if ($splitHeroToken) { ?>
-                    <td class="desc">
-                        <h3>Step 2</h3>
-                        <p>Click the button below to sync your posts & pages to Split Hero.</p>
+		<?php if ($splitHeroToken) { ?>
+            <td class="desc">
+                <h3>Step 2</h3>
+                <p>Click the button below to sync your posts & pages to Split Hero.</p>
 
-                        <form method="post">
-                            <input type="hidden" name="splithero_sync" value="true"/>
-                            <input type="submit" value="Sync" class="button button-primary">
-                        </form>
-                    </td>
-                    <td class="desc">
-                        <h3>Step 3</h3>
-                        <p>Return to the Split Hero dashboard and proceed to create a campaign.</p>
-                        <a href="https://app.splithero.com/campaigns" class="button button-primary" target="_blank">Create a
-                            campaign</a>
-                    </td><?php
-                } ?>
-            </tr>
-        </tbody>
+                <form method="post">
+                    <input type="hidden" name="splithero_sync" value="true"/>
+                    <input type="submit" value="Sync" class="button button-primary">
+                </form>
+            </td>
+            <td class="desc">
+                <h3>Step 3</h3>
+                <p>Return to the Split Hero dashboard and proceed to create a campaign.</p>
+                <a href="https://app.splithero.com/campaigns" class="button button-primary" target="_blank">Create a
+                    campaign</a>
+            </td><?php
+		} ?>
+    </tr>
+    </tbody>
     </table><?php
 
 	if (!empty($_POST['splithero_sync'])) {
@@ -250,4 +251,23 @@ function splitheroCacheClear()
 	\SplitHero\Swift::run();
 	\SplitHero\W3cache::run();
 	\SplitHero\Wpengine::run();
+}
+
+add_filter('plugin_action_links', 'splitheroPluginActionLinks', 10, 2);
+
+function splitheroPluginActionLinks($links, $file)
+{
+	static $this_plugin;
+
+	if (!$this_plugin) {
+		$this_plugin = plugin_basename(__FILE__);
+	}
+
+	if ($file == $this_plugin) {
+		$settings_link = '<a href="' . admin_url('options-general.php?page=splithero') . '">' . __('Settings', 'splithero') . '</a>';
+
+		array_unshift($links, $settings_link);
+	}
+
+	return $links;
 }
