@@ -7,6 +7,9 @@ Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog ==
 
+= 1.6.1 =
+* Improved connections with Split Hero on different hosting providers
+
 = 1.6 =
 * Improved instructions for use
 * Auto-cache flushing support for Autoptimize, Breeze, Cache Enabler, GoDaddy Hosting, Hummingbird, Kinsta, LiteSpeed Cache, Pagely, Pantheon, SiteGround Hosting, Swift Performance, W3 Total Cache, WPEngine Hosting, WP Fastest Cache, WP Super Cache

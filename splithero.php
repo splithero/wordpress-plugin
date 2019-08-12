@@ -4,12 +4,12 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: Split testing for WordPress. Stop guessing and start testing.
- * Version: 1.6
+ * Version: 1.6.1
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '1.6');
+define('SPLITHERO_VERSION', '1.6.1');
 define('SPLITHERO_ENDPOINT', 'https://app.splithero.com/api/');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
 define('SPLITHERO_GITHUB_TOKEN', '8aef10c5b50f378c058f183f404fa1313fd16478');
@@ -55,9 +55,8 @@ function splitheroShowSettings()
 
 		$request = wp_remote_post(SPLITHERO_ENDPOINT . 'token_check', [
 				'method' => 'POST',
-				'timeout' => 15,
+				'timeout' => 30,
 				'blocking' => true,
-				'sslverify' => false,
 				'headers' => [
 					'token' => $splitHeroToken
 				],
@@ -147,9 +146,8 @@ function splitheroShowSettings()
 
 		$request = wp_remote_post(SPLITHERO_ENDPOINT . 'sync', [
 				'method' => 'POST',
-				'timeout' => 15,
+				'timeout' => 30,
 				'blocking' => true,
-				'sslverify' => false,
 				'headers' => [
 					'token' => $splitHeroToken
 				],
