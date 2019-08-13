@@ -7,6 +7,9 @@ Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog ==
 
+= 1.6.2 =
+* More improvements to connections with Split Hero on different hosting providers
+
 = 1.6.1 =
 * Improved connections with Split Hero on different hosting providers
 
