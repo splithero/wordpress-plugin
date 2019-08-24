@@ -7,6 +7,9 @@ Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog ==
 
+= 1.7 =
+* Synchronisation support for CartFlows and WooCommerce
+
 = 1.6.3 =
 * Nitropack exclusion support
 

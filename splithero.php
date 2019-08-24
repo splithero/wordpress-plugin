@@ -4,12 +4,12 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: Split testing for WordPress. Stop guessing and start testing.
- * Version: 1.6.3
+ * Version: 1.7
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '1.6.3');
+define('SPLITHERO_VERSION', '1.7');
 define('SPLITHERO_ENDPOINT', 'https://app.splithero.com/api/');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
 define('SPLITHERO_GITHUB_TOKEN', '8aef10c5b50f378c058f183f404fa1313fd16478');
@@ -55,10 +55,11 @@ function splitheroShowSettings()
 
 		add_filter('https_ssl_verify', '__return_false');
 
-		$request = wp_safe_remote_post(SPLITHERO_ENDPOINT . 'token_check', [
+		$request = wp_remote_post(SPLITHERO_ENDPOINT . 'token_check', [
 				'method' => 'POST',
 				'timeout' => 30,
 				'blocking' => true,
+				'ssl_verify' => false,
 				'headers' => [
 					'token' => $splitHeroToken
 				],
@@ -89,13 +90,11 @@ function splitheroShowSettings()
             <form method="post">
                 <label for="API Token">Your API token</label>
                 <br/>
-                <input type="text" name="splithero_token" id="splithero_token" value="<?php echo $splitHeroToken; ?>"
-                       size="40">
+                <input type="text" name="splithero_token" id="splithero_token" value="<?php echo $splitHeroToken; ?>" size="40">
                 <br/><br/>
                 <input type="submit" value="Save" class="button button-primary">
                 <br/><br/>
-                <p>You can find your API token via <a href="https://app.splithero.com/domains" target="_blank">Split
-                        Hero > Domains</a>.</p>
+                <p>You can find your API token via <a href="https://app.splithero.com/domains" target="_blank">Split Hero > Domains</a>.</p>
             </form>
         </td>
 
@@ -112,9 +111,9 @@ function splitheroShowSettings()
             <td class="desc">
                 <h3>Step 3</h3>
                 <p>Return to the Split Hero dashboard and proceed to create a campaign.</p>
-                <a href="https://app.splithero.com/campaigns" class="button button-primary" target="_blank">Create a
-                    campaign</a>
+                <a href="https://app.splithero.com/campaigns" class="button button-primary" target="_blank">Create a campaign</a>
             </td><?php
+
 		} ?>
     </tr>
     </tbody>
@@ -125,6 +124,40 @@ function splitheroShowSettings()
 			'domain' => get_option('siteurl')
 		];
 
+		// WooCommerce
+		if (class_exists('\WooCommerce')) {
+			$order = new WC_Order();
+			$order_received_url = strtok($order->get_checkout_order_received_url(), '?');
+
+			$sync['posts'][] = [
+				'title' => 'Order Received',
+				'type' => 'woocommerce',
+				'url' => esc_url($order_received_url),
+				'status' => 'publish'
+			];
+		}
+
+		// CartFlows
+		$posts = get_posts([
+			'post_type' => ['cartflows_flow', 'cartflows_step'],
+			'post_status' => 'any',
+			'numberposts' => -1,
+			'orderby' => 'title',
+			'order' => 'ASC'
+		]);
+
+		foreach ($posts as $post) {
+			if ($post->post_type !== 'attachment') {
+				$sync['posts'][] = [
+					'title' => $post->post_title,
+					'type' => $post->post_type,
+					'url' => esc_url(get_permalink($post->ID)),
+					'status' => $post->post_status
+				];
+			}
+		}
+
+		// Posts/Pages
 		$posts = get_posts([
 			'post_type' => 'any',
 			'post_status' => 'any',
@@ -136,10 +169,8 @@ function splitheroShowSettings()
 		foreach ($posts as $post) {
 			if ($post->post_type !== 'attachment') {
 				$sync['posts'][] = [
-					'id' => $post->ID,
 					'title' => $post->post_title,
 					'type' => $post->post_type,
-					'date' => $post->post_date,
 					'url' => esc_url(get_permalink($post->ID)),
 					'status' => $post->post_status
 				];
@@ -148,10 +179,11 @@ function splitheroShowSettings()
 
 		add_filter('https_ssl_verify', '__return_false');
 
-		$request = wp_safe_remote_post(SPLITHERO_ENDPOINT . 'sync', [
+		$request = wp_remote_post(SPLITHERO_ENDPOINT . 'sync', [
 				'method' => 'POST',
 				'timeout' => 30,
 				'blocking' => true,
+				'ssl_verify' => false,
 				'headers' => [
 					'token' => $splitHeroToken
 				],
@@ -166,9 +198,9 @@ function splitheroShowSettings()
 			if ($request['response']['code'] !== 200) {
 				echo '<p>Something went wrong: please check your API key is correct.</p>';
 			} else {
-				splitheroCacheClear();
+				splitheroCacheClear(); ?>
+                <h3>Pages/Posts synchronisation complete.</h3><?php
 
-				?><h3>Pages/Posts synchronisation complete.</h3><?php
 			}
 		}
 	}
@@ -266,7 +298,8 @@ function splitheroPluginActionLinks($links, $file)
 	}
 
 	if ($file == $this_plugin) {
-		$settings_link = '<a href="' . admin_url('options-general.php?page=splithero') . '">' . __('Settings', 'splithero') . '</a>';
+		$settings_link = '<a href="' . admin_url('options-general.php?page=splithero') . '">' . __('Settings',
+				'splithero') . '</a>';
 
 		array_unshift($links, $settings_link);
 	}
