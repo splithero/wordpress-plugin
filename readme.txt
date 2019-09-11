@@ -7,6 +7,9 @@ Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog ==
 
+= 1.7.1 =
+* Switch to WordPress URL (over Site URL) fix for deprecated WP get_option() function
+
 = 1.7 =
 * Synchronisation support for CartFlows and WooCommerce
 

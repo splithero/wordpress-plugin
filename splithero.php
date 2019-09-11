@@ -4,12 +4,12 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: Split testing for WordPress. Stop guessing and start testing.
- * Version: 1.7
+ * Version: 1.7.1
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '1.7');
+define('SPLITHERO_VERSION', '1.7.1');
 define('SPLITHERO_ENDPOINT', 'https://app.splithero.com/api/');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
 define('SPLITHERO_GITHUB_TOKEN', '8aef10c5b50f378c058f183f404fa1313fd16478');
@@ -121,7 +121,7 @@ function splitheroShowSettings()
 
 	if (!empty($_POST['splithero_sync'])) {
 		$sync['config'] = [
-			'domain' => get_option('siteurl')
+			'domain' => site_url()
 		];
 
 		// WooCommerce
