@@ -7,6 +7,9 @@ Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog ==
 
+= 1.7.3 =
+* Final modifications to URL structures for posts/pages syncing and JS embed
+
 = 1.7.2 =
 * More modifications to URL structures for domain syncing
 
