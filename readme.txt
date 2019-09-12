@@ -1,11 +1,14 @@
 === SplitHero ===
 Requires at least: 4.9
-Tested up to: 5.2.2
+Tested up to: 5.2.3
 Requires PHP: 7.0
 
 Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog ==
+
+= 1.7.2 =
+* More modifications to URL structures for domain syncing
 
 = 1.7.1 =
 * Switch to WordPress URL (over Site URL) fix for deprecated WP get_option() function
