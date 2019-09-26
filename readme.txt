@@ -7,6 +7,9 @@ Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog ==
 
+= 1.7.4 =
+* Obfuscate API token in Settings
+
 = 1.7.3 =
 * Final modifications to URL structures for posts/pages syncing and JS embed
 

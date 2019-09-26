@@ -4,12 +4,12 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: Split testing for WordPress. Stop guessing and start testing.
- * Version: 1.7.3
+ * Version: 1.7.4
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '1.7.3');
+define('SPLITHERO_VERSION', '1.7.4');
 define('SPLITHERO_ENDPOINT', 'https://app.splithero.com/api/');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
 define('SPLITHERO_GITHUB_TOKEN', '8aef10c5b50f378c058f183f404fa1313fd16478');
@@ -90,7 +90,7 @@ function splitheroShowSettings()
             <form method="post">
                 <label for="API Token">Your API token</label>
                 <br/>
-                <input type="text" name="splithero_token" id="splithero_token" value="<?php echo $splitHeroToken; ?>" size="40">
+                <input <?php if ($splitHeroToken) { ?>type="password"<?php } else { ?>type="text"<?php } ?> name="splithero_token" id="splithero_token" value="<?php echo $splitHeroToken; ?>" size="40">
                 <br/><br/>
                 <input type="submit" value="Save" class="button button-primary">
                 <br/><br/>
