@@ -4,12 +4,12 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: Split testing for WordPress. Stop guessing and start testing.
- * Version: 1.7.4
+ * Version: 1.7.5
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '1.7.4');
+define('SPLITHERO_VERSION', '1.7.5');
 define('SPLITHERO_ENDPOINT', 'https://app.splithero.com/api/');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
 define('SPLITHERO_GITHUB_TOKEN', '8aef10c5b50f378c058f183f404fa1313fd16478');
@@ -215,8 +215,9 @@ function splitheroJsScript()
 {
 	// What was requested (strip out home portion, case insensitive)
 	$request = str_ireplace(get_option('home'), '', splitHeroUtilityGetAddress());
+	$loggedInUser = (is_user_logged_in()) ? 'true' : 'false';
 
-	echo '<script src="' . SPLITHERO_ENDPOINT . 'js?r=' . home_url($request) . '" nitro-exclude></script>';
+	echo '<script src="' . SPLITHERO_ENDPOINT . 'js?r=' . home_url($request) . '&wpliu=' . $loggedInUser .'" nitro-exclude></script>';
 }
 
 /*

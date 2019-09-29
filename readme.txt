@@ -7,6 +7,9 @@ Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog ==
 
+= 1.7.5 =
+* Pass logged in user parameter into test request URL
+
 = 1.7.4 =
 * Obfuscate API token in Settings
 
