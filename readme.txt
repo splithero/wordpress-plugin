@@ -1,11 +1,14 @@
 === SplitHero ===
 Requires at least: 4.9
-Tested up to: 5.2.3
+Tested up to: 5.3.2
 Requires PHP: 7.0
 
 Split Testing for WordPress. Stop guessing and start testing.
 
-== Changelog ==
+== Changelog =
+
+== 1.7.6 =
+* Plugin repo now public, removed need for access token for update checks
 
 = 1.7.5 =
 * Pass logged in user parameter into test request URL
@@ -52,7 +55,7 @@ Split Testing for WordPress. Stop guessing and start testing.
 
 = 1.2 =
 * Included WP JSON REST API endpoint
-* Included redirects function, checking for campaign URL requests 
+* Included redirects function, checking for campaign URL requests
 
 = 1.1 =
 * Auto-updating from GitHub repo

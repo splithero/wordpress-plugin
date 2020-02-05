@@ -4,23 +4,21 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: Split testing for WordPress. Stop guessing and start testing.
- * Version: 1.7.5
+ * Version: 1.7.6
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '1.7.5');
+define('SPLITHERO_VERSION', '1.7.6');
 define('SPLITHERO_ENDPOINT', 'https://app.splithero.com/api/');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
-define('SPLITHERO_GITHUB_TOKEN', '8aef10c5b50f378c058f183f404fa1313fd16478');
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/includes/cache.php';
 require __DIR__ . '/includes/puc/plugin-update-checker.php';
 
 /*
- * Plugin update checker
- * Via GitHub repo
+ * Plugin update checker via GitHub repo
  */
 $updateChecker = Puc_v4_Factory::buildUpdateChecker(
 	'https://github.com/' . SPLITHERO_GITHUB_ENDPOINT,
@@ -28,7 +26,6 @@ $updateChecker = Puc_v4_Factory::buildUpdateChecker(
 	'splithero'
 );
 
-$updateChecker->setAuthentication(SPLITHERO_GITHUB_TOKEN);
 $updateChecker->setBranch('master');
 
 /*
