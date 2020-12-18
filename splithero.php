@@ -4,13 +4,12 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: Split testing for WordPress. Stop guessing and start testing.
- * Version: 1.7.6
+ * Version: 1.8.0
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '1.7.6');
-define('SPLITHERO_ENDPOINT', 'https://app.splithero.com/api/');
+define('SPLITHERO_VERSION', '1.8.0');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
 
 require __DIR__ . '/vendor/autoload.php';
@@ -28,6 +27,10 @@ $updateChecker = Puc_v4_Factory::buildUpdateChecker(
 
 $updateChecker->setBranch('master');
 
+if (is_admin()) {
+	add_filter('all_plugins', 'splitheroPluginsPage');
+}
+
 /*
  * Menu options added
  * Under Settings
@@ -36,11 +39,17 @@ add_action('admin_menu', 'splitheroMenu');
 
 function splitheroMenu()
 {
-	add_options_page('Split Hero', 'Split Hero', 'manage_options', 'splithero', 'splitheroShowSettings');
+	$pluginName = (get_option('splithero_plugin_name')) ? get_option('splithero_plugin_name') : 'Split Hero';
+	add_options_page($pluginName, $pluginName, 'manage_options', 'splithero', 'splitheroShowSettings');
 }
 
 function splitheroShowSettings()
 {
+	$splitHeroToken = get_option('splithero_token', null);
+	$splitHeroBranding = get_option('splithero_branding', 'https://app.splithero.com/images/logo.svg');
+	$splitHeroDomain = get_option('splithero_domain', (isset($_GET['env'])) ? $_GET['env'] : 'https://app.splithero.com');
+	$splitHeroPluginName = get_option('splithero_plugin_name', 'Split Hero');
+	
 	include 'includes/branding.php';
 
 	if (!current_user_can('manage_options')) {
@@ -52,13 +61,13 @@ function splitheroShowSettings()
 
 		add_filter('https_ssl_verify', '__return_false');
 
-		$request = wp_remote_post(SPLITHERO_ENDPOINT . 'token_check', [
+		$request = wp_remote_post($splitHeroDomain . '/api/token_check', [
 				'method' => 'POST',
 				'timeout' => 30,
 				'blocking' => true,
 				'ssl_verify' => false,
 				'headers' => [
-					'token' => $splitHeroToken
+					'token' => $splitHeroToken,
 				],
 			]
 		);
@@ -71,54 +80,75 @@ function splitheroShowSettings()
 				echo '<h3>Something went wrong: please check your API key is correct.</h3>';
 			} else {
 				update_option('splithero_token', $splitHeroToken);
+
+				$whiteLabelSettings = json_decode($request['body'], true);
+
+				$splitHeroBranding = $whiteLabelSettings['branding'];
+				$splitHeroDomain = $whiteLabelSettings['domain'];
+				$splitHeroPluginName = $whiteLabelSettings['plugin']['name'];
+				$splitHeroPluginDescription = $whiteLabelSettings['plugin']['description'];
+				$splitHeroPluginAuthor = $whiteLabelSettings['team'];
+
+				update_option('splithero_branding', $splitHeroBranding);
+				update_option('splithero_domain', $splitHeroDomain);
+				update_option('splithero_plugin_name', $splitHeroPluginName);
+				update_option('splithero_plugin_description', $splitHeroPluginDescription);
+				update_option('splithero_plugin_author', $splitHeroPluginAuthor);
 			}
 		}
-	}
+	} ?>
 
-	$splitHeroToken = get_option('splithero_token'); ?>
+	<table class="widefat striped" style="width: 98%;">
+	<tbody>
+	<tr>
+		<td class="desc">
+			<h3>Step 1</h3>
+			<p>Enter your API key below and press Save.</p>
 
-    <table class="widefat striped" style="width: 98%;">
-    <tbody>
-    <tr>
-        <td class="desc">
-            <h3>Step 1</h3>
-            <p>Enter your API key below and press Save.</p>
+			<form method="post">
+				<label for="API Token">Your API token</label>
+				<br/>
+				<input <?php
+				       if ($splitHeroToken) { ?>type="password" <?php
+				       } else { ?>type="text"<?php
+				} ?> name="splithero_token" id="splithero_token" value="<?php
+				echo $splitHeroToken; ?>" size="40">
+				<br/><br/>
+				<input type="submit" value="Save" class="button button-primary">
+				<br/><br/>
+				<p>You can find your API token via <a href="<?php
+					echo $splitHeroDomain; ?>/domains" target="_blank"><?php
+						echo $splitHeroPluginName; ?> > Domains</a>.</p>
+			</form>
+		</td>
 
-            <form method="post">
-                <label for="API Token">Your API token</label>
-                <br/>
-                <input <?php if ($splitHeroToken) { ?>type="password"<?php } else { ?>type="text"<?php } ?> name="splithero_token" id="splithero_token" value="<?php echo $splitHeroToken; ?>" size="40">
-                <br/><br/>
-                <input type="submit" value="Save" class="button button-primary">
-                <br/><br/>
-                <p>You can find your API token via <a href="https://app.splithero.com/domains" target="_blank">Split Hero > Domains</a>.</p>
-            </form>
-        </td>
+		<?php
+		if ($splitHeroToken) { ?>
+			<td class="desc">
+				<h3>Step 2</h3>
+				<p>Click the button below to sync your posts & pages to <?php
+					echo $splitHeroPluginName; ?>.</p>
 
-		<?php if ($splitHeroToken) { ?>
-            <td class="desc">
-                <h3>Step 2</h3>
-                <p>Click the button below to sync your posts & pages to Split Hero.</p>
-
-                <form method="post">
-                    <input type="hidden" name="splithero_sync" value="true"/>
-                    <input type="submit" value="Sync" class="button button-primary">
-                </form>
-            </td>
-            <td class="desc">
-                <h3>Step 3</h3>
-                <p>Return to the Split Hero dashboard and proceed to create a campaign.</p>
-                <a href="https://app.splithero.com/campaigns" class="button button-primary" target="_blank">Create a campaign</a>
-            </td><?php
-
+				<form method="post">
+					<input type="hidden" name="splithero_sync" value="true"/>
+					<input type="submit" value="Sync" class="button button-primary">
+				</form>
+			</td>
+			<td class="desc">
+			<h3>Step 3</h3>
+			<p>Return to the <?php
+				echo $splitHeroPluginName; ?> dashboard and proceed to create a campaign.</p>
+			<a href="<?php
+			echo $splitHeroDomain; ?>/campaigns" class="button button-primary" target="_blank">Create a campaign</a>
+			</td><?php
 		} ?>
-    </tr>
-    </tbody>
-    </table><?php
+	</tr>
+	</tbody>
+	</table><?php
 
 	if (!empty($_POST['splithero_sync'])) {
 		$sync['config'] = [
-			'domain' => home_url()
+			'domain' => home_url(),
 		];
 
 		// WooCommerce
@@ -130,7 +160,7 @@ function splitheroShowSettings()
 				'title' => 'Order Received',
 				'type' => 'woocommerce',
 				'url' => esc_url($order_received_url),
-				'status' => 'publish'
+				'status' => 'publish',
 			];
 		}
 
@@ -140,7 +170,7 @@ function splitheroShowSettings()
 			'post_status' => 'any',
 			'numberposts' => -1,
 			'orderby' => 'title',
-			'order' => 'ASC'
+			'order' => 'ASC',
 		]);
 
 		foreach ($posts as $post) {
@@ -149,7 +179,7 @@ function splitheroShowSettings()
 					'title' => $post->post_title,
 					'type' => $post->post_type,
 					'url' => esc_url(get_permalink($post->ID)),
-					'status' => $post->post_status
+					'status' => $post->post_status,
 				];
 			}
 		}
@@ -160,7 +190,7 @@ function splitheroShowSettings()
 			'post_status' => 'any',
 			'numberposts' => -1,
 			'orderby' => 'title',
-			'order' => 'ASC'
+			'order' => 'ASC',
 		]);
 
 		foreach ($posts as $post) {
@@ -169,22 +199,22 @@ function splitheroShowSettings()
 					'title' => $post->post_title,
 					'type' => $post->post_type,
 					'url' => esc_url(get_permalink($post->ID)),
-					'status' => $post->post_status
+					'status' => $post->post_status,
 				];
 			}
 		}
 
 		add_filter('https_ssl_verify', '__return_false');
 
-		$request = wp_remote_post(SPLITHERO_ENDPOINT . 'sync', [
+		$request = wp_remote_post($splitHeroDomain . '/api/sync', [
 				'method' => 'POST',
 				'timeout' => 30,
 				'blocking' => true,
 				'ssl_verify' => false,
 				'headers' => [
-					'token' => $splitHeroToken
+					'token' => $splitHeroToken,
 				],
-				'body' => ['sync' => serialize($sync)]
+				'body' => ['sync' => serialize($sync)],
 			]
 		);
 
@@ -196,8 +226,7 @@ function splitheroShowSettings()
 				echo '<p>Something went wrong: please check your API key is correct.</p>';
 			} else {
 				splitheroCacheClear(); ?>
-                <h3>Pages/Posts synchronisation complete.</h3><?php
-
+				<h3>Pages/Posts synchronisation complete.</h3><?php
 			}
 		}
 	}
@@ -210,34 +239,13 @@ add_action('wp_head', 'splitheroJsScript', -1000);
 
 function splitheroJsScript()
 {
+	$splitHeroDomain = get_option('splithero_domain', 'https://app.splithero.com');
+
 	// What was requested (strip out home portion, case insensitive)
 	$request = str_ireplace(get_option('home'), '', splitHeroUtilityGetAddress());
 	$loggedInUser = (is_user_logged_in()) ? 'true' : 'false';
 
-	echo '<script src="' . SPLITHERO_ENDPOINT . 'js?r=' . home_url($request) . '&wpliu=' . $loggedInUser .'" nitro-exclude></script>';
-}
-
-/*
- * API endpoint created
- * Under WP REST API for injection of the campaign details
- */
-add_action('rest_api_init', 'splitheroApiRoutes');
-
-function splitheroApiRoutes()
-{
-	register_rest_route('splithero', 'campaigns', [
-			'methods' => 'POST',
-			'callback' => 'splitheroInsertUpdateCampaign'
-		]
-	);
-}
-
-function splitheroInsertUpdateCampaign(WP_REST_Request $request)
-{
-	// Nothing to do here
-	// Left in to prevent old campaign errors
-	// Will remove in v2.0
-	return rest_ensure_response('Campaigns added or updated successfully.');
+	echo '<script src="' . $splitHeroDomain . '/api/js?r=' . home_url($request) . '&wpliu=' . $loggedInUser . '" nitro-exclude></script>';
 }
 
 /**
@@ -303,4 +311,27 @@ function splitheroPluginActionLinks($links, $file)
 	}
 
 	return $links;
+}
+
+function splitheroPluginsPage($plugins)
+{
+	$key = plugin_basename(__FILE__);
+
+	$splitHeroDomain = get_option('splithero_domain', 'https://app.splithero.com');
+	$splitHeroPluginName = get_option('splithero_plugin_name', 'Split Hero');
+	$splitHeroPluginDescription = get_option('splithero_plugin_description', 'Split Hero');
+	$splitHeroPluginAuthor = get_option('splithero_plugin_author', 'Split Hero');
+
+	if (isset($plugins[$key]) && false !== 'Split Hero') {
+		$plugins[$key]['Name'] = $splitHeroPluginName;
+		$plugins[$key]['Description'] = $splitHeroPluginDescription;
+
+		$plugins[$key]['Author'] = $splitHeroPluginAuthor;
+		$plugins[$key]['AuthorName'] = $splitHeroPluginAuthor;
+
+		$plugins[$key]['AuthorURI'] = $splitHeroDomain;
+		$plugins[$key]['PluginURI'] = $splitHeroDomain;
+	}
+
+	return $plugins;
 }

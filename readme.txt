@@ -1,11 +1,14 @@
 === SplitHero ===
-Requires at least: 4.9
-Tested up to: 5.3.2
-Requires PHP: 7.0
+Requires at least: 5.2
+Tested up to: 5.6
+Requires PHP: 7.2
 
 Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog =
+
+== 1.8.0 =
+* White label settings pushed remotely from Split Hero app
 
 == 1.7.6 =
 * Plugin repo now public, removed need for access token for update checks

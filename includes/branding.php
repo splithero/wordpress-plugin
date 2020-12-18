@@ -1,1 +1,1 @@
-<img src="https://app.splithero.com/images/logo.svg" height="140" style="margin: 20px 0;" />
+<img src="<?php echo $splitHeroBranding;?>" height="120" style="margin: 20px 0;" />
