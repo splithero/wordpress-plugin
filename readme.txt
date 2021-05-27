@@ -1,11 +1,14 @@
 === SplitHero ===
 Requires at least: 5.2
-Tested up to: 5.6
+Tested up to: 5.7.2
 Requires PHP: 7.2
 
 Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog =
+
+== 1.8.1 =
+* Exclude WooCommerce customers as a logged in user, if they created an account during checkout
 
 == 1.8.0 =
 * White label settings pushed remotely from Split Hero app

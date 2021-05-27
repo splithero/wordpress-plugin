@@ -4,12 +4,12 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: Split testing for WordPress. Stop guessing and start testing.
- * Version: 1.8.0
+ * Version: 1.8.1
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '1.8.0');
+define('SPLITHERO_VERSION', '1.8.1');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
 
 require __DIR__ . '/vendor/autoload.php';
@@ -49,7 +49,7 @@ function splitheroShowSettings()
 	$splitHeroBranding = get_option('splithero_branding', 'https://app.splithero.com/images/logo.svg');
 	$splitHeroDomain = get_option('splithero_domain', (isset($_GET['env'])) ? $_GET['env'] : 'https://app.splithero.com');
 	$splitHeroPluginName = get_option('splithero_plugin_name', 'Split Hero');
-	
+
 	include 'includes/branding.php';
 
 	if (!current_user_can('manage_options')) {
@@ -244,6 +244,12 @@ function splitheroJsScript()
 	// What was requested (strip out home portion, case insensitive)
 	$request = str_ireplace(get_option('home'), '', splitHeroUtilityGetAddress());
 	$loggedInUser = (is_user_logged_in()) ? 'true' : 'false';
+
+	if ($loggedInUser) {
+		if (in_array('customer', (array) wp_get_current_user()->roles)) {
+			$loggedInUser = 'false';
+		}
+	}
 
 	echo '<script src="' . $splitHeroDomain . '/api/js?r=' . home_url($request) . '&wpliu=' . $loggedInUser . '" nitro-exclude></script>';
 }
