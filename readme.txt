@@ -7,6 +7,9 @@ Split Testing for WordPress. Stop guessing and start testing.
 
 == Changelog =
 
+== 1.9.0 =
+* Conversion logging via shortcodes
+
 == 1.8.1 =
 * Exclude WooCommerce customers as a logged in user, if they created an account during checkout
 

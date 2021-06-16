@@ -4,12 +4,12 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: Split testing for WordPress. Stop guessing and start testing.
- * Version: 1.8.1
+ * Version: 1.9.0
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '1.8.1');
+define('SPLITHERO_VERSION', '1.9.0');
 define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
 
 require __DIR__ . '/vendor/autoload.php';
@@ -341,3 +341,26 @@ function splitheroPluginsPage($plugins)
 
 	return $plugins;
 }
+
+function splitheroConversionShortcode($attributes = [])
+{
+	$splitHeroDomain = get_option('splithero_domain', 'https://app.splithero.com');
+	$attributes = array_change_key_case((array) $attributes, CASE_LOWER);
+	$js = null;
+
+	if (isset($attributes['campaign'])) {
+		$js .= '<script>fetch("' . $splitHeroDomain . '/api/conversion", { method: "post", headers: { "Content-Type": "application/json" }, mode: "cors", body: JSON.stringify({ campaign: ' . $attributes['campaign'] . ' }) });</script>';
+	}
+
+	return $js;
+}
+
+/**
+ * Central location to create all shortcodes.
+ */
+function splitheroConversionShortcodeInit()
+{
+	add_shortcode('sh-convert', 'splitheroConversionShortcode');
+}
+
+add_action('init', 'splitheroConversionShortcodeInit');
