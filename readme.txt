@@ -1,11 +1,16 @@
-=== SplitHero ===
+=== Split Hero ===
 Requires at least: 5.2
-Tested up to: 5.7.2
-Requires PHP: 7.2
+Tested up to: 6.5.3
+Requires PHP: 7.4
 
-Split Testing for WordPress. Stop guessing and start testing.
+WordPress A/B testing made easy.
+The best solution to make A/B Testing in WordPress easier and faster than ever before.
 
 == Changelog =
+
+== 2.0.0 =
+* Aligning plugin version numbers with web app versioning
+* New repo for WordPress plugin
 
 == 1.9.0 =
 * Conversion logging via shortcodes

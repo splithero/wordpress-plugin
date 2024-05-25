@@ -3,14 +3,14 @@
 /*
  * Plugin Name: Split Hero
  * Author: Split Hero
- * Description: Split testing for WordPress. Stop guessing and start testing.
- * Version: 1.9.0
+ * Description: WordPress A/B testing made easy.
+ * Version: 2.0.0
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '1.9.0');
-define('SPLITHERO_GITHUB_ENDPOINT', 'csoutham/splithero-wordpress-plugin');
+define('SPLITHERO_VERSION', '2.0.0');
+define('SPLITHERO_GITHUB_ENDPOINT', 'splithero/wordpress-plugin');
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/includes/cache.php';
@@ -25,7 +25,7 @@ $updateChecker = Puc_v4_Factory::buildUpdateChecker(
 	'splithero'
 );
 
-$updateChecker->setBranch('master');
+$updateChecker->setBranch('main');
 
 if (is_admin()) {
 	add_filter('all_plugins', 'splitheroPluginsPage');
@@ -100,49 +100,49 @@ function splitheroShowSettings()
 
 	<table class="widefat striped" style="width: 98%;">
 	<tbody>
-	<tr>
-		<td class="desc">
-			<h3>Step 1</h3>
-			<p>Enter your API key below and press Save.</p>
-
-			<form method="post">
-				<label for="API Token">Your API token</label>
-				<br/>
-				<input <?php
-				       if ($splitHeroToken) { ?>type="password" <?php
-				       } else { ?>type="text"<?php
-				} ?> name="splithero_token" id="splithero_token" value="<?php
-				echo $splitHeroToken; ?>" size="40">
-				<br/><br/>
-				<input type="submit" value="Save" class="button button-primary">
-				<br/><br/>
-				<p>You can find your API token via <a href="<?php
-					echo $splitHeroDomain; ?>/domains" target="_blank"><?php
-						echo $splitHeroPluginName; ?> > Domains</a>.</p>
-			</form>
-		</td>
-
-		<?php
-		if ($splitHeroToken) { ?>
+		<tr>
 			<td class="desc">
-				<h3>Step 2</h3>
-				<p>Click the button below to sync your posts & pages to <?php
-					echo $splitHeroPluginName; ?>.</p>
+				<h3>Step 1</h3>
+				<p>Enter your API key below and press Save.</p>
 
 				<form method="post">
-					<input type="hidden" name="splithero_sync" value="true"/>
-					<input type="submit" value="Sync" class="button button-primary">
+					<label for="API Token">Your API token</label>
+					<br />
+					<input <?php
+					       if ($splitHeroToken) { ?>type="password" <?php
+					       } else { ?>type="text"<?php
+					} ?> name="splithero_token" id="splithero_token" value="<?php
+					echo $splitHeroToken; ?>" size="40">
+					<br /><br />
+					<input type="submit" value="Save" class="button button-primary">
+					<br /><br />
+					<p>You can find your API token via <a href="<?php
+						echo $splitHeroDomain; ?>/domains" target="_blank"><?php
+							echo $splitHeroPluginName; ?> > Domains</a>.</p>
 				</form>
 			</td>
-			<td class="desc">
-			<h3>Step 3</h3>
-			<p>Return to the <?php
-				echo $splitHeroPluginName; ?> dashboard and proceed to create a campaign.</p>
-			<a href="<?php
-			echo $splitHeroDomain; ?>/campaigns" class="button button-primary" target="_blank">Create a campaign</a>
-			</td><?php
-		} ?>
-	</tr>
+
+			<?php
+			if ($splitHeroToken) { ?>
+				<td class="desc">
+					<h3>Step 2</h3>
+					<p>Click the button below to sync your posts & pages to <?php
+						echo $splitHeroPluginName; ?>.</p>
+
+					<form method="post">
+						<input type="hidden" name="splithero_sync" value="true" />
+						<input type="submit" value="Sync" class="button button-primary">
+					</form>
+				</td>
+				<td class="desc">
+				<h3>Step 3</h3>
+				<p>Return to the <?php
+					echo $splitHeroPluginName; ?> dashboard and proceed to create a campaign.</p>
+				<a href="<?php
+				echo $splitHeroDomain; ?>/campaigns" class="button button-primary" target="_blank">Create a campaign</a>
+				</td><?php
+			} ?>
+		</tr>
 	</tbody>
 	</table><?php
 
@@ -239,19 +239,21 @@ add_action('wp_head', 'splitheroJsScript', -1000);
 
 function splitheroJsScript()
 {
-	$splitHeroDomain = get_option('splithero_domain', 'https://app.splithero.com');
+	if (get_option('splithero_token', null)) {
+		$splitHeroDomain = get_option('splithero_domain', 'https://app.splithero.com');
 
-	// What was requested (strip out home portion, case insensitive)
-	$request = str_ireplace(get_option('home'), '', splitHeroUtilityGetAddress());
-	$loggedInUser = (is_user_logged_in()) ? 'true' : 'false';
+		// What was requested (strip out home portion, case insensitive)
+		$request = str_ireplace(get_option('home'), '', splitHeroUtilityGetAddress());
+		$loggedInUser = (is_user_logged_in()) ? 'true' : 'false';
 
-	if ($loggedInUser) {
-		if (in_array('customer', (array) wp_get_current_user()->roles)) {
-			$loggedInUser = 'false';
+		if ($loggedInUser) {
+			if (in_array('customer', (array) wp_get_current_user()->roles)) {
+				$loggedInUser = 'false';
+			}
 		}
-	}
 
-	echo '<script src="' . $splitHeroDomain . '/api/js?r=' . home_url($request) . '&wpliu=' . $loggedInUser . '" nitro-exclude></script>';
+		echo '<script src="' . $splitHeroDomain . '/api/js?r=' . home_url($request) . '&wpliu=' . $loggedInUser . '" nitro-exclude></script>';
+	}
 }
 
 /**
@@ -310,8 +312,10 @@ function splitheroPluginActionLinks($links, $file)
 	}
 
 	if ($file == $this_plugin) {
-		$settings_link = '<a href="' . admin_url('options-general.php?page=splithero') . '">' . __('Settings',
-				'splithero') . '</a>';
+		$settings_link = '<a href="' . admin_url('options-general.php?page=splithero') . '">' . __(
+				'Settings',
+				'splithero'
+			) . '</a>';
 
 		array_unshift($links, $settings_link);
 	}
