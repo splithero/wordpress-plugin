@@ -8,6 +8,9 @@ The best solution to make A/B Testing in WordPress easier and faster than ever b
 
 == Changelog =
 
+== 2.0.1 =
+* Ensure endpoint is pointing at Split Hero app (app.splithero.com)
+
 == 2.0.0 =
 * Aligning plugin version numbers with web app versioning
 * New repo for WordPress plugin

@@ -4,12 +4,12 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: WordPress A/B testing made easy.
- * Version: 2.0.0
+ * Version: 2.0.1
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '2.0.0');
+define('SPLITHERO_VERSION', '2.0.1');
 define('SPLITHERO_GITHUB_ENDPOINT', 'splithero/wordpress-plugin');
 
 require __DIR__ . '/vendor/autoload.php';
@@ -47,7 +47,7 @@ function splitheroShowSettings()
 {
 	$splitHeroToken = get_option('splithero_token', null);
 	$splitHeroBranding = get_option('splithero_branding', 'https://app.splithero.com/images/logo.svg');
-	$splitHeroDomain = get_option('splithero_domain', (isset($_GET['env'])) ? $_GET['env'] : 'https://app.splithero.com');
+	$splitHeroDomain = 'https://app.splithero.com';
 	$splitHeroPluginName = get_option('splithero_plugin_name', 'Split Hero');
 
 	include 'includes/branding.php';
@@ -240,7 +240,7 @@ add_action('wp_head', 'splitheroJsScript', -1000);
 function splitheroJsScript()
 {
 	if (get_option('splithero_token', null)) {
-		$splitHeroDomain = get_option('splithero_domain', 'https://app.splithero.com');
+		$splitHeroDomain = 'https://app.splithero.com';
 
 		// What was requested (strip out home portion, case insensitive)
 		$request = str_ireplace(get_option('home'), '', splitHeroUtilityGetAddress());
@@ -327,7 +327,7 @@ function splitheroPluginsPage($plugins)
 {
 	$key = plugin_basename(__FILE__);
 
-	$splitHeroDomain = get_option('splithero_domain', 'https://app.splithero.com');
+	$splitHeroDomain = 'https://app.splithero.com';
 	$splitHeroPluginName = get_option('splithero_plugin_name', 'Split Hero');
 	$splitHeroPluginDescription = get_option('splithero_plugin_description', 'Split Hero');
 	$splitHeroPluginAuthor = get_option('splithero_plugin_author', 'Split Hero');
@@ -348,7 +348,7 @@ function splitheroPluginsPage($plugins)
 
 function splitheroConversionShortcode($attributes = [])
 {
-	$splitHeroDomain = get_option('splithero_domain', 'https://app.splithero.com');
+	$splitHeroDomain = 'https://app.splithero.com';
 	$attributes = array_change_key_case((array) $attributes, CASE_LOWER);
 	$js = null;
 
