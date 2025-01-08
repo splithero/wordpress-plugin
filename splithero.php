@@ -4,12 +4,12 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: WordPress A/B testing made easy.
- * Version: 2.0.1
+ * Version: 2.0.2
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '2.0.1');
+define('SPLITHERO_VERSION', '2.0.2');
 define('SPLITHERO_GITHUB_ENDPOINT', 'splithero/wordpress-plugin');
 
 require __DIR__ . '/vendor/autoload.php';
@@ -352,9 +352,9 @@ function splitheroConversionShortcode($attributes = [])
 	$attributes = array_change_key_case((array) $attributes, CASE_LOWER);
 	$js = null;
 
-	if (isset($attributes['campaign'])) {
-		$js .= '<script>fetch("' . $splitHeroDomain . '/api/conversion", { method: "post", headers: { "Content-Type": "application/json" }, mode: "cors", body: JSON.stringify({ campaign: ' . $attributes['campaign'] . ' }) });</script>';
-	}
+    if (isset($attributes['campaign'])) {
+        $js .= '<script>fetch("' . $splitHeroDomain . '/api/conversion", { method: "post", headers: { "Content-Type": "application/json" }, mode: "cors", body: JSON.stringify({ campaign: ' . $attributes['campaign'] . ', url: window.location.href }) });</script>';
+    }
 
 	return $js;
 }
