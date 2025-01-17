@@ -8,6 +8,9 @@ The best solution to make A/B Testing in WordPress easier and faster than ever b
 
 == Changelog =
 
+== 2.0.3 =
+* Fix: Increase time execution
+
 == 2.0.2 =
 * Fix: Include URL in conversion requests
 

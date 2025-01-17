@@ -4,13 +4,14 @@
  * Plugin Name: Split Hero
  * Author: Split Hero
  * Description: WordPress A/B testing made easy.
- * Version: 2.0.2
+ * Version: 2.0.3
  */
 
 global $wpdb;
 
-define('SPLITHERO_VERSION', '2.0.2');
+define('SPLITHERO_VERSION', '2.0.3');
 define('SPLITHERO_GITHUB_ENDPOINT', 'splithero/wordpress-plugin');
+set_time_limit(300);
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/includes/cache.php';
@@ -208,7 +209,7 @@ function splitheroShowSettings()
 
 		$request = wp_remote_post($splitHeroDomain . '/api/sync', [
 				'method' => 'POST',
-				'timeout' => 30,
+				'timeout' => 300,
 				'blocking' => true,
 				'ssl_verify' => false,
 				'headers' => [
